@@ -38,37 +38,69 @@ export default function MasonryGallery() {
       {/* Gallery */}
       <div className="columns-1 gap-4 space-y-4 sm:columns-2 md:columns-3 lg:columns-4">
         {industries.map((item, index) => (
-          <motion.div
-            key={index}
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: index * 0.1 }}
-            viewport={{ once: true }}
-            onMouseEnter={() => setHovered(index)}
-            onMouseLeave={() => setHovered(null)}
-            className="group relative overflow-hidden rounded-2xl shadow-lg transition-all duration-300 ease-in-out"
-          >
-            <motion.img
-              src={item.src}
-              alt={item.label}
-              className={`w-full rounded-lg object-cover transition-all duration-300 ease-in-out ${
-                hovered === null
-                  ? 'blur-0 scale-100'
-                  : hovered === index
-                    ? 'blur-0 scale-105'
-                    : 'blur-xs'
-              }`}
-              whileHover={{ scale: 1.05 }}
-            />
+  //         <motion.div
+  //           key={index}
+  //           initial={{ opacity: 0, y: 30 }}
+  //           whileInView={{ opacity: 1, y: 0 }}
+  //           transition={{ duration: 0.4, delay: index * 0.1 }}
+  //           viewport={{ once: true }}
+  //           onMouseEnter={() => setHovered(index)}
+  //           onMouseLeave={() => setHovered(null)}
+  //           className="group relative overflow-hidden rounded-2xl shadow-lg transition-all duration-300 ease-in-out"
+  //         >
+  //           <motion.img
+  //             src={item.src}
+  //             alt={item.label}
+  //             className={`w-full rounded-lg object-cover transition-all duration-300 ease-in-out ${
+  //               hovered === null
+  //                 ? 'blur-0 scale-100'
+  //                 : hovered === index
+  //                   ? 'blur-0 scale-105'
+  //                   : 'blur-xs'
+  //             }`}
+  //             whileHover={{ scale: 1.05 }}
+  //           />
   
-            {/* Overlay Label */}
-            <div className="absolute inset-0 flex items-center justify-center bg-black/40 
-  opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-300">
-              <span className="text-lg font-semibold text-white tracking-wide">
-                {item.label}
-              </span>
-            </div>
-          </motion.div>
+  //           {/* Overlay Label */}
+  //           <div className="absolute inset-0 flex items-center justify-center bg-black/40 
+  // opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-300">
+  //             <span className="text-lg font-semibold text-white tracking-wide">
+  //               {item.label}
+  //             </span>
+  //           </div>
+  //         </motion.div>
+  <motion.div
+  key={index}
+  onMouseEnter={() => setHovered(index)}
+  onMouseLeave={() => setHovered(null)}
+  onClick={() => setHovered(hovered === index ? null : index)} // 👈 toggle on tap
+  className="group relative overflow-hidden rounded-2xl shadow-lg transition-all duration-300 ease-in-out"
+>
+  <motion.img
+    src={item.src}
+    alt={item.label}
+    className={`w-full rounded-lg object-cover transition-all duration-300 ease-in-out ${
+      hovered === null
+        ? 'blur-0 scale-100'
+        : hovered === index
+          ? 'blur-0 scale-105'
+          : 'blur-xs'
+    }`}
+    whileHover={{ scale: 1.05 }}
+  />
+
+  {/* Overlay Label */}
+  <div
+    className={`absolute inset-0 flex items-center justify-center bg-black/40 transition-opacity duration-300 ${
+      hovered === index ? 'opacity-100' : 'opacity-0 sm:group-hover:opacity-100'
+    }`}
+  >
+    <span className="text-lg font-semibold text-white tracking-wide">
+      {item.label}
+    </span>
+  </div>
+</motion.div>
+
         ))}
       </div>
     </section>

@@ -57,27 +57,30 @@ const features = [
 ];
 
 const Pills = () => (
-  <div className="flex flex-wrap items-center justify-center gap-4 py-10 px-6">
+  <div className="w-full max-w-6xl mx-auto flex flex-wrap items-center justify-center gap-4 py-10 px-4 sm:px-6">
     {features.map((feature, idx) => (
       <Pill
         key={idx}
-        className={`${colors[idx % colors.length]} text-white border-none shadow-md hover:opacity-90 transition-transform duration-200 hover:scale-105`}
+        className={`${colors[idx % colors.length]} text-white border-none shadow-md hover:opacity-90 transition-transform duration-200 hover:scale-105 px-4 py-3`}
       >
-        <div className="relative flex items-center">
-          <PillIcon
-            icon={feature.icon}
-            className="animate-pulse"
-          />
+        <div className="relative flex items-start">
+          <PillIcon icon={feature.icon} className="animate-pulse shrink-0" />
           {/* little blinking dot like heartbeat effect */}
           <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-white animate-ping"></span>
         </div>
         <div className="flex flex-col text-left ml-2">
-          <span className="text-sm font-semibold">{feature.title}</span>
-          <span className="text-xs text-white/80">{feature.desc}</span>
+          <span className="text-sm font-semibold leading-snug">
+            {feature.title}
+          </span>
+          <span className="text-xs text-white/80 leading-snug">
+            {feature.desc}
+          </span>
         </div>
       </Pill>
     ))}
   </div>
 );
+
+
 
 export default Pills;

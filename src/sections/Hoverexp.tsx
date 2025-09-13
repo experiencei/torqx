@@ -9,14 +9,6 @@ const text = `Providing advertisers with high impact access to Urban Africa.`;
 const words = text.split(" ");
 
 const images = [
-  // "https://images.pexels.com/photos/30082445/pexels-photo-30082445.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
-  // "https://images.unsplash.com/photo-1692606743169-e1ae2f0a960f?q=80&w=3560&auto=format&fit=crop",
-  // "https://assets.lummi.ai/assets/QmQLSBeCFHUwCv7WBpGr7T3P67UXaAw8B2vvmtKimyinrL?auto=format&w=1500",
-  // "https://assets.lummi.ai/assets/QmXe6v7jBF5L2R7FCio8KQdXwTX2uqzRycUJapyjoXaTqd?auto=format&w=1500",
-  // "https://assets.lummi.ai/assets/QmNfwUDpehZyLWzE8to7QzgbJ164S6fQy8JyUWemHtmShj?auto=format&w=1500",
-  // "https://images.unsplash.com/photo-1706049379414-437ec3a54e93?q=80&w=1200&auto=format",
-  // "https://assets.lummi.ai/assets/Qmb2P6tF2qUaFXnXpnnp2sk9HdVHNYXUv6MtoiSq7jjVhQ?auto=format&w=1500",
-  // "https://images.unsplash.com/photo-1508873881324-c92a3fc536ba?q=80&w=1200&auto=format",
   "https://cxpqdxdbyccviojjtalg.supabase.co/storage/v1/object/public/Torqx%20AI/4.jpeg",
   "https://cxpqdxdbyccviojjtalg.supabase.co/storage/v1/object/public/Torqx%20AI/2.png",
   "https://cxpqdxdbyccviojjtalg.supabase.co/storage/v1/object/public/Torqx%20AI/3.png",
@@ -71,25 +63,29 @@ export default function Introduction() {
 
         {/* GRID SECTION */}
         <div className="relative mt-14 grid grid-cols-1 md:grid-cols-2 gap-10 items-stretch">
+         
           {/* MAP IMAGE */}
-          <div className="rounded-2xl border border-gray-200 bg-gray-50 p-4 shadow-md flex justify-center items-center">
-            <img
-              src="https://cxpqdxdbyccviojjtalg.supabase.co/storage/v1/object/public/Torqx%20AI/africa3.png"
-              alt="Map Preview"
-              className="w-[700px] max-w-4xl h-auto rounded-xl object-cover"
-            />
-          </div>
+<div className="rounded-2xl border border-gray-200 bg-gray-50 p-4 shadow-md flex justify-center items-center overflow-hidden">
+  <img
+    src="https://cxpqdxdbyccviojjtalg.supabase.co/storage/v1/object/public/Torqx%20AI/africas.png"
+    alt="Map Preview"
+    className="w-full max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl h-auto rounded-xl object-contain"
+  />
+</div>
 
-          {/* HOVER EXPAND */}
-          <div className="rounded-2xl border border-gray-200 bg-gray-50 p-4 shadow-md flex justify-center items-center">
-            <HoverExpand
-              images={images}
-              initialSelectedIndex={0}
-              thumbnailHeight={200}
-              modalImageSize={400}
-              maxThumbnails={6}
-            />
-          </div>
+{/* HOVER EXPAND */}
+<div className="rounded-2xl border border-gray-200 bg-gray-50 p-4 shadow-md flex justify-center items-center overflow-hidden">
+  <div className="w-full max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl">
+    <HoverExpand
+      images={images}
+      initialSelectedIndex={0}
+      thumbnailHeight={200}
+      modalImageSize={400}
+      maxThumbnails={6}
+    />
+  </div>
+</div>
+
         </div>
       </div>
     </section>

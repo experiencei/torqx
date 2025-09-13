@@ -6,7 +6,7 @@ import Image from "next/image";
 import { Merriweather } from "next/font/google"; // Google font just for testimonials
 
 
-import avatar2 from "@/assets/avatar-2.png";
+// import avatar2 from "@/assets/avatar-2.png";
 
 
 // Import Merriweather for testimonials
@@ -73,11 +73,11 @@ const testimonials: Testimonial[] = [
   },
   {
     text: "Torqx AI is the bridge between creativity and data. It has given our campaigns both storytelling power and measurable outcomes.",
-    imageSrc: avatar2.src,
+    imageSrc: "https://cxpqdxdbyccviojjtalg.supabase.co/storage/v1/object/public/Torqx%20AI/of1.jpeg",
     name: "Fatima Diallo",
     role: "Creative Director, BrandSpark",
   },
-];
+]; 
 
 const firstColumn = testimonials.slice(0, 3);
 const secondColumn = testimonials.slice(3, 6);

@@ -1,4 +1,4 @@
-import grainImage from '@/assets/images/grain.jpg';
+import grainImage from '@/assets/images/map.png';
 import { ComponentPropsWithoutRef } from "react"; 
 import {twMerge} from "tailwind-merge";
 

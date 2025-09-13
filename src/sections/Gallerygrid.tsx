@@ -60,9 +60,10 @@ export default function MasonryGallery() {
               }`}
               whileHover={{ scale: 1.05 }}
             />
-
+  
             {/* Overlay Label */}
-            <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+            <div className="absolute inset-0 flex items-center justify-center bg-black/40 
+  opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-300">
               <span className="text-lg font-semibold text-white tracking-wide">
                 {item.label}
               </span>

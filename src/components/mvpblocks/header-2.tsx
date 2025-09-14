@@ -188,43 +188,36 @@ export default function Header({ variant = "default" }: HeaderProps) {
 
             {/* Mobile Action Buttons */}
             <div className="space-y-3 mt-6">
-              <Link
-                href="/contact"
-                className={`block w-full rounded-lg py-3 text-center font-medium shadow-lg transition-all duration-200
-                  ${isPulse ? "bg-white text-black hover:bg-black hover:text-white" : "bg-black text-white hover:bg-white hover:text-black"}
-                `}
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Get Started for Free
-              </Link>
-              <div
-  onClick={() => setIsMobileMenuOpen(false)}
-  className="w-full"
->
-{root && (
-  <PopupButton
-  url="https://calendly.com/ayelojahighbee01/30min"
-  rootElement={document.body}
-  text="Request a Demo"
-  className={`block w-full rounded-lg border py-3 text-center font-semibold shadow-lg transition-all duration-200
-    ${
-      isPulse
-        ? "border-white text-white hover:bg-white hover:text-black"
-        : "border-black text-black hover:bg-black hover:text-white"
-    }
-  `}
-/>
-)}
-  
-</div>
+  <Link
+    href="/contact"
+    className={`block w-full rounded-lg py-3 text-center font-medium shadow-lg transition-all duration-200
+      ${isPulse ? "bg-white text-black hover:bg-black hover:text-white" : "bg-black text-white hover:bg-white hover:text-black"}
+    `}
+    onClick={() => setIsMobileMenuOpen(false)}
+  >
+    Get Started for Free
+  </Link>
 
-              
-            </div>
+  {root && (
+    <PopupButton
+      url="https://calendly.com/ayelojahighbee01/30min"
+      rootElement={document.body}
+      text="Request a Demo"
+      className={`block w-full rounded-lg py-3 text-center font-medium shadow-lg border transition-all duration-200
+        ${isPulse ? "border-white text-white hover:bg-white hover:text-black" : "border-black text-black hover:bg-black hover:text-white"}
+      `}
+    />
+  )}
+</div>
           </motion.div>
         )}
       </AnimatePresence>
     </>
   );
 }
+
+
+
+
 
 

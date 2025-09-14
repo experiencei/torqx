@@ -41,9 +41,11 @@ export default function ContactUs2() {
     <section className="w-full bg-black text-white py-20">
       <div className="container mx-auto max-w-5xl px-6">
         {/* Heading */}
-        <h2 className="mb-5 text-center text-4xl font-semibold md:text-6xl">
-          Let’s Shape the Future with <span className="text-green-500">Torqx AI</span>
-        </h2>
+        <h2 className="mb-5 text-center text-4xl font-semibold md:text-6xl leading-tight">
+  Let’s Shape the Future with <br />
+  <span className="text-green-500 block">Torqx AI</span>
+</h2>
+
         <p className="mb-12 text-center text-gray-400 max-w-2xl mx-auto">
           Whether you’re an ambitious startup, a growing brand, or an enterprise looking to scale — 
           Torqx AI is here to power your journey. Drop us a message and let’s create impact together.

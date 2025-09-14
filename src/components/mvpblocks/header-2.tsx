@@ -81,7 +81,7 @@ export default function Header({ variant = "default" }: HeaderProps) {
                 </span>
               </div>
             </Link>
-
+ 
             {/* Desktop Nav */}
             <nav className="hidden items-center space-x-1 lg:flex">
               {navItems.map((item) => (

@@ -113,49 +113,39 @@ export default function AboutUs1() {
           >
             {/* Mission */}
             <motion.div
-              whileHover={{ y: -5 }}
-              className="group border-border/40 relative block overflow-hidden rounded-2xl border bg-gradient-to-br from-gray-900 to-gray-800 p-10 backdrop-blur-3xl"
-            >
-              <BorderBeam
-                duration={8}
-                size={300}
-                className="via-blue-500/40 from-transparent to-transparent"
-              />
+  whileHover={{ y: -5 }}
+  className="group relative block overflow-hidden rounded-2xl border border-white 
+             bg-black text-white p-10 h-full 
+             transition-colors duration-300 
+             hover:bg-white hover:text-black
+             focus:bg-white focus:text-black
+             active:bg-white active:text-black"
+>
+  <div className="mb-6 inline-flex h-16 w-16 items-center justify-center rounded-2xl 
+                  bg-white/10 group-hover:bg-black/10">
+    <Rocket className="h-6 w-6" />
+  </div>
+  <h3 className="mb-3 text-xl font-semibold">Our Mission</h3>
+  <p className="text-sm leading-relaxed">{aboutData.mission}</p>
+</motion.div>
 
-              <div className="mb-6 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500/20 to-blue-500/5">
-                <Rocket className="h-8 w-8 text-blue-400" />
-              </div>
-
-              <h2 className="mb-4 bg-gradient-to-r from-blue-400 to-blue-200 bg-clip-text text-3xl font-semibold text-transparent">
-                Our Mission
-              </h2>
-              <p className="text-gray-400 text-lg leading-relaxed">
-                {aboutData.mission}
-              </p>
-            </motion.div>
-
-            {/* Vision */}
-            <motion.div
-              whileHover={{ y: -5 }}
-              className="group border-border/40 relative block overflow-hidden rounded-2xl border bg-gradient-to-br from-gray-900 to-gray-800 p-10 backdrop-blur-3xl"
-            >
-              <BorderBeam
-                duration={8}
-                size={300}
-                className="from-transparent via-purple-500/40 to-transparent"
-                reverse
-              />
-              <div className="mb-6 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-purple-500/20 to-purple-500/5">
-                <Target className="h-8 w-8 text-purple-400" />
-              </div>
-
-              <h2 className="mb-4 bg-gradient-to-r from-purple-400 to-purple-200 bg-clip-text text-3xl font-semibold text-transparent">
-                Our Vision
-              </h2>
-              <p className="text-gray-400 text-lg leading-relaxed">
-                {aboutData.vision}
-              </p>
-            </motion.div>
+{/* Vision */}
+<motion.div
+  whileHover={{ y: -5 }}
+  className="group relative block overflow-hidden rounded-2xl border border-white 
+             bg-black text-white p-10 h-full 
+             transition-colors duration-300 
+             hover:bg-white hover:text-black
+             focus:bg-white focus:text-black
+             active:bg-white active:text-black"
+>
+  <div className="mb-6 inline-flex h-16 w-16 items-center justify-center rounded-2xl 
+                  bg-white/10 group-hover:bg-black/10">
+    <Target className="h-6 w-6" />
+  </div>
+  <h3 className="mb-3 text-xl font-semibold">Our Vision </h3>
+  <p className="text-sm leading-relaxed">{aboutData.vision}</p>
+</motion.div>
           </motion.div>
         </div>
 
@@ -183,35 +173,32 @@ export default function AboutUs1() {
               const IconComponent = iconComponents[value.icon];
               return (
                 <motion.div
-                  key={value.title}
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={
-                    valuesInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }
-                  }
-                  transition={{
-                    duration: 0.6,
-                    delay: index * 0.1 + 0.2,
-                    ease: "easeOut",
-                  }}
-                  whileHover={{ y: -5, scale: 1.02 }}
-                >
-                  <CardHoverEffect
-                    icon={<IconComponent className="h-6 w-6" />}
-                    title={value.title}
-                    description={value.description}
-                    variant={
-                      index === 0
-                        ? "blue"
-                        : index === 1
-                        ? "purple"
-                        : index === 2
-                        ? "rose"
-                        : "amber"
-                    }
-                    glowEffect={true}
-                    size="lg"
-                  />
-                </motion.div>
+  key={value.title}
+  initial={{ opacity: 0, y: 30 }}
+  animate={valuesInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+  transition={{
+    duration: 0.6,
+    delay: index * 0.1 + 0.2,
+    ease: "easeOut",
+  }}
+  whileHover={{ y: -5, scale: 1.02 }}
+  className="h-full"
+>
+  <div
+    className="group flex flex-col justify-between h-full rounded-2xl border border-white bg-black text-white 
+               p-8 transition-colors duration-300
+               hover:bg-white hover:text-black
+               focus:bg-white focus:text-black
+               active:bg-white active:text-black"
+  >
+    <div className="mb-6 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-white/10 group-hover:bg-black/10">
+      <IconComponent className="h-6 w-6" />
+    </div>
+    <h3 className="mb-3 text-xl font-semibold">{value.title}</h3>
+    <p className="text-sm leading-relaxed">{value.description}</p>
+  </div>
+</motion.div>
+
               );
             })}
           </div>

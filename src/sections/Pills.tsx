@@ -61,18 +61,23 @@ const Pills = () => (
     {features.map((feature, idx) => (
       <Pill
         key={idx}
-        className="group bg-white text-black border border-black shadow-md px-2 py-3 transition-all duration-200 hover:bg-black hover:text-white hover:border-white"
+        className="group bg-white text-black border border-black shadow-md px-2 py-3 transition-all duration-200
+                   hover:bg-black hover:text-white hover:border-white
+                   focus:bg-black focus:text-white focus:border-white
+                   active:bg-black active:text-white active:border-white"
       >
         <div className="relative flex items-start">
           <PillIcon icon={feature.icon} className="shrink-0" />
-          {/* blinking dot that switches with group hover */}
-          <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-black animate-ping group-hover:bg-white"></span>
+          {/* blinking dot switches with hover/focus/active */}
+          <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-black animate-ping 
+                           group-hover:bg-white group-focus:bg-white group-active:bg-white"></span>
         </div>
         <div className="flex flex-col text-left ml-2">
           <span className="text-sm font-semibold leading-snug">
             {feature.title}
           </span>
-          <span className="text-xs text-black/70 leading-snug group-hover:text-white/80">
+          <span className="text-xs text-black/70 leading-snug 
+                           group-hover:text-white/80 group-focus:text-white/80 group-active:text-white/80">
             {feature.desc}
           </span>
         </div>

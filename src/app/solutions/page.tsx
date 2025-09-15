@@ -7,8 +7,8 @@ import IndustriesGrid from "@/sections/GridIndustries";
 
 export default function PulsePage() {
   return (
-    <>
-    <Header/>
+    <> 
+    <Header variant="pulse"/>
     <Hero />
     <IndustriesGrid />
      

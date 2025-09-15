@@ -60,44 +60,48 @@ export default function AppHero() {
   return (
     <section className="relative flex min-h-screen w-full flex-col items-center overflow-hidden bg-black mt-14 py-28 text-white sm:px-6 lg:px-8 lg:py-2">
       {/* Removed gradients / glow / noise → keep solid black bg */}
-      <div className="fadein-blur relative z-0 mx-auto mb-10 h-[400px] w-[600px] 
-    lg:absolute lg:top-1/2 lg:right-1/2 lg:mx-0 lg:mb-0 lg:h-[650px] lg:w-[850px] 
-    lg:translate-x-1/2 lg:-translate-y-2/3">
-      <img
-        src="https://cxpqdxdbyccviojjtalg.supabase.co/storage/v1/object/public/Torqx%20AI/dodo.png"
-        alt="Torqx 3D Visualization"
-        className="h-full w-full object-contain transition-all duration-1000 hover:scale-110"
-      />
-        <motion.div
-          variants={itemVariants}
-          className="absolute top-4 -left-4 rounded-lg border border-purple-500/30 bg-black p-2 backdrop-blur-md lg:top-1/4 lg:-left-20"
-        >
-          <div className="flex items-center gap-2">
-            <Zap className="h-4 w-4 text-purple-400" />
-            <span className="text-xs font-medium">Dynamic Content</span>
-          </div>
-        </motion.div>
+<div
+  className="relative mx-auto mb-10 w-full max-w-[500px] sm:max-w-[600px] lg:max-w-[750px] xl:max-w-[900px] 
+  lg:mb-0 lg:mr-0 lg:flex-shrink-0"
+>
+  <img
+    src="https://cxpqdxdbyccviojjtalg.supabase.co/storage/v1/object/public/Torqx%20AI/dodo.png"
+    alt="Torqx 3D Visualization"
+    className="h-auto w-full object-contain transition-all duration-1000 hover:scale-105"
+  />
 
-        <motion.div
-          variants={itemVariants}
-          className="absolute top-1/2 -right-4 rounded-lg border border-blue-500/30 bg-black p-2 backdrop-blur-md lg:-right-24"
-        >
-          <div className="flex items-center gap-2">
-            <Database className="h-4 w-4 text-blue-400" />
-            <span className="text-xs font-medium">Seamless Monetization</span>
-          </div>
-        </motion.div>
+  {/* Labels */}
+  <motion.div
+    variants={itemVariants}
+    className="absolute top-4 left-2 sm:top-6 sm:-left-4 rounded-lg border border-purple-500/30 bg-black p-2 backdrop-blur-md"
+  >
+    <div className="flex items-center gap-2">
+      <Zap className="h-4 w-4 text-purple-400" />
+      <span className="text-xs font-medium">Dynamic Content</span>
+    </div>
+  </motion.div>
 
-        <motion.div
-          variants={itemVariants}
-          className="absolute bottom-4 left-4 rounded-lg border border-indigo-500/30 bg-black p-2 backdrop-blur-md lg:bottom-1/4 lg:left-8"
-        >
-          <div className="flex items-center gap-2">
-            <Sparkles className="h-4 w-4 text-indigo-400" />
-            <span className="text-xs font-medium">AI-Powered Targeting</span>
-          </div>
-        </motion.div>
-      </div>
+  <motion.div
+    variants={itemVariants}
+    className="absolute top-1/2 right-2 sm:-right-8 rounded-lg border border-blue-500/30 bg-black p-2 backdrop-blur-md"
+  >
+    <div className="flex items-center gap-2">
+      <Database className="h-4 w-4 text-blue-400" />
+      <span className="text-xs font-medium">Seamless Monetization</span>
+    </div>
+  </motion.div>
+
+  <motion.div
+    variants={itemVariants}
+    className="absolute bottom-4 left-2 sm:bottom-8 sm:left-8 rounded-lg border border-indigo-500/30 bg-black p-2 backdrop-blur-md"
+  >
+    <div className="flex items-center gap-2">
+      <Sparkles className="h-4 w-4 text-indigo-400" />
+      <span className="text-xs font-medium">AI-Powered Targeting</span>
+    </div>
+  </motion.div>
+</div>
+
 
       {/* Main Content */}
       <motion.main

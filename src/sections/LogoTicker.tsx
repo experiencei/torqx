@@ -24,8 +24,8 @@ export const LogoTicker = () => {
           transition={{ duration: 0.5, delay: 0.1 }}
           className="text-center text-lg font-medium text-black"
         >
-          Trusted by{" "}
-          <span className="font-semibold text-black">1000+ businesses</span>
+          Our Location Customer{" "}
+          {/* <span className="font-semibold text-black">1000+ businesses</span> */}
         </motion.p>
 
         {/* Logos Ticker */}

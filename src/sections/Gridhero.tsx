@@ -45,12 +45,14 @@ export default function AppHero() {
       <div className="mx-auto grid w-full max-w-7xl grid-cols-1 items-center gap-12 lg:grid-cols-2">
         
         {/* LEFT SIDE — Image + Floating Labels */}
-        <div className="relative mx-auto w-full max-w-xl sm:max-w-2xl lg:max-w-2xl xl:max-w-3xl">
-          <img
-            src="https://cxpqdxdbyccviojjtalg.supabase.co/storage/v1/object/public/Torqx%20AI/dodo.png"
-            alt="Torqx 3D Visualization"
-            className="h-auto w-full object-contain transition-all duration-1000 hover:scale-105"
-          />
+        <div className="relative w-full max-w-5xl px-2">
+  <img
+    src="https://cxpqdxdbyccviojjtalg.supabase.co/storage/v1/object/public/Torqx%20AI/dodo.png"
+    alt="Torqx 3D Visualization"
+    className="w-full h-auto object-contain transition-all duration-1000 hover:scale-105"
+  />
+
+
 
           {/* Labels */}
           <motion.div

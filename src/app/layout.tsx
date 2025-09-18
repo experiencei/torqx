@@ -21,6 +21,9 @@ const hanken = Hanken_Grotesk({
 export const metadata: Metadata = {
   title: "Torqx AI – Smart Ad Management & Screen Intelligence",
   description: "Launch, manage, and optimize ads in minutes. Torqx AI unifies ad management, screen control, and weather intelligence to power Africa’s digital future.",
+  icons: {
+    icon: "/zap.ico", // or /favicon.png
+  },
 };
 
 export default function RootLayout({
@@ -36,3 +39,6 @@ export default function RootLayout({
     </html>
   );
 }
+
+
+

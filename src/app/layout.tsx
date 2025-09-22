@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { Hanken_Grotesk } from "next/font/google";
 import "./globals.css";
+import "./theme.css";
+import { AuthProvider } from "@/lib/authProvider";
 
 // const geistSans = Geist({
 //   variable: "--font-geist-sans",
@@ -34,7 +37,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${hanken.variable} font-sans`}>
-        {children}
+        <AuthProvider>
+              {children}
+        <Script src="https://js.paystack.co/v1/inline.js" strategy="afterInteractive" />
+        </AuthProvider>
       </body>
     </html>
   );

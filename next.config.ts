@@ -20,17 +20,6 @@ const nextConfig: NextConfig = {
       "picsum.photos"
     ],
   },
-
-  // async redirects() {
-  //   return [
-  //     {
-  //       source: "/dashboard",
-  //       destination: "https://dashboard.torqxai.vercel.app",
-  //       permanent: true, // 308 redirect
-  //     },
-  //   ]
-  // },
-
   webpack(config) {
     // Grab the existing rule that handles SVG imports
     // const fileLoaderRule = config.module.rules.find((rule) =>

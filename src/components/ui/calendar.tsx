@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { DayPicker, DayPickerProps } from "react-day-picker";
+import { DayPicker, DayPickerProps, NavProps } from "react-day-picker";
 
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "./button";
@@ -60,23 +60,27 @@ function Calendar({
         ...classNames,
       }}
       components={{
-        // Custom navigation with icons
-        Nav: (navProps) => (
+        // ✅ Fixed Nav implementation
+        Nav: ({ onPreviousClick, onNextClick, previousMonth, nextMonth }: NavProps) => (
           <div className="flex items-center justify-between w-full">
             <button
-              {...navProps.previousButtonProps}
+              type="button"
+              onClick={onPreviousClick}
+              disabled={!previousMonth}
               className={cn(
                 buttonVariants({ variant: "outline" }),
-                "size-7 bg-transparent p-0 opacity-50 hover:opacity-100"
+                "size-7 bg-transparent p-0 opacity-50 hover:opacity-100 disabled:opacity-20"
               )}
             >
               <ChevronLeft className="size-4" />
             </button>
             <button
-              {...navProps.nextButtonProps}
+              type="button"
+              onClick={onNextClick}
+              disabled={!nextMonth}
               className={cn(
                 buttonVariants({ variant: "outline" }),
-                "size-7 bg-transparent p-0 opacity-50 hover:opacity-100"
+                "size-7 bg-transparent p-0 opacity-50 hover:opacity-100 disabled:opacity-20"
               )}
             >
               <ChevronRight className="size-4" />

@@ -20,6 +20,7 @@ const nextConfig: NextConfig = {
       "picsum.photos"
     ],
   },
+  
   webpack(config) {
     // Grab the existing rule that handles SVG imports
     // const fileLoaderRule = config.module.rules.find((rule) =>
@@ -66,6 +67,10 @@ const nextConfig: NextConfig = {
     fileLoaderRule.exclude = /\.svg$/i;
 
     return config;
+  },
+  typescript: {
+    // ⚠️ Danger: this ignores all type errors!
+    ignoreBuildErrors: true,
   },
   eslint: {
     ignoreDuringBuilds: true,

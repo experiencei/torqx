@@ -19,7 +19,8 @@ const features = [
       "Start campaigns in minutes. No scouting, no paperwork — just set your budget and go live with ease.",
     icon: <MonitorPlay className="text-brand-green h-6 w-6" />,
     image:
-      "https://cxpqdxdbyccviojjtalg.supabase.co/storage/v1/object/public/Torqx%20AI/2.jpg",
+      "https://cxpqdxdbyccviojjtalg.supabase.co/storage/v1/object/public/Torqx%20AI/8.png",
+      
   },
   {
     step: "Step 2",
@@ -28,7 +29,7 @@ const features = [
       "Use advanced geotargeting to choose exact cities, postal codes, or radius targeting. Visualize everything with Google Maps integration.",
     icon: <MapPin className="text-brand-green h-6 w-6" />,
     image:
-      "https://cxpqdxdbyccviojjtalg.supabase.co/storage/v1/object/public/Torqx%20AI/3.jpg",
+      "https://cxpqdxdbyccviojjtalg.supabase.co/storage/v1/object/public/Torqx%20AI/9.png",
   },
   {
     step: "Step 3",
@@ -37,16 +38,16 @@ const features = [
       "From gyms and malls to offices, hotels, restaurants, and airports — select venues that match your campaign goals.",
     icon: <Building2 className="text-brand-green h-6 w-6" />,
     image:
-      "https://cxpqdxdbyccviojjtalg.supabase.co/storage/v1/object/public/Torqx%20AI/4.jpg",
+      "https://cxpqdxdbyccviojjtalg.supabase.co/storage/v1/object/public/Torqx%20AI/10.png",
   },
-  {
+  { 
     step: "Step 4",
     title: "Plan & Optimize",
     content:
       "Schedule campaigns by day, week, or hour. Generate QR codes to measure engagement and boost interactivity effortlessly.",
     icon: <CalendarClock className="text-brand-green h-6 w-6" />,
     image:
-      "https://cxpqdxdbyccviojjtalg.supabase.co/storage/v1/object/public/Torqx%20AI/5.jpg",
+      "https://cxpqdxdbyccviojjtalg.supabase.co/storage/v1/object/public/Torqx%20AI/12.png",
   },
 ];
 
@@ -82,7 +83,7 @@ export default function HowItWorks() {
 
         {/* Divider */}
         <hr className="mx-auto mb-10 h-px w-1/2 border-gray-800" />
-
+ 
         {/* Content */}
         <div className="flex flex-col gap-8 md:grid md:grid-cols-2 md:gap-12">
           {/* Steps */}

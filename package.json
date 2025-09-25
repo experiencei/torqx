@@ -69,6 +69,7 @@
     "react-hook-form": "^7.62.0",
     "react-label": "^0.0.6",
     "react-map-gl": "^8.0.4",
+    "react-paystack": "^6.0.0",
     "react-resizable-panels": "^3.0.6",
     "recharts": "^3.2.1",
     "resend": "^6.0.3",

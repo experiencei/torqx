@@ -3,17 +3,6 @@ import Script from "next/script";
 import { Hanken_Grotesk } from "next/font/google";
 import "./globals.css";
 import "./theme.css";
-import { AuthProvider } from "@/lib/authProvider";
-
-// const geistSans = Geist({
-//   variable: "--font-geist-sans",
-//   subsets: ["latin"],
-// });
-
-// const geistMono = Geist_Mono({
-//   variable: "--font-geist-mono",
-//   subsets: ["latin"],
-// });
 
 const hanken = Hanken_Grotesk({
   subsets: ["latin"],
@@ -37,10 +26,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${hanken.variable} font-sans`}>
-        <AuthProvider>
               {children}
-        <Script src="https://js.paystack.co/v1/inline.js" strategy="afterInteractive" />
-        </AuthProvider>
+        {/* <Script src="https://js.paystack.co/v1/inline.js" strategy="afterInteractive" /> */}
       </body>
     </html>
   );

@@ -21,7 +21,7 @@ interface UploadedFile {
 
 interface CreativesUploadSectionProps {
   uploadedCreatives: any[];
-  setUploadedCreatives: (creatives: any[]) => void;
+  setUploadedCreatives: React.Dispatch<React.SetStateAction<any[]>>;
 }
 
 export function CreativesUploadSection({
@@ -69,9 +69,19 @@ export function CreativesUploadSection({
 
       setUploadedFiles((prev) => [...prev, newFile]);
 
+      // also push into parent state
+      setUploadedCreatives((prev) => [...prev, newFile]);
+
       // Simulate upload process
       setTimeout(() => {
         setUploadedFiles((prev) =>
+          prev.map((f) =>
+            f.id === fileId
+              ? { ...f, status: Math.random() > 0.1 ? "success" : "error" }
+              : f
+          )
+        );
+        setUploadedCreatives((prev) =>
           prev.map((f) =>
             f.id === fileId
               ? { ...f, status: Math.random() > 0.1 ? "success" : "error" }
@@ -84,6 +94,7 @@ export function CreativesUploadSection({
 
   const removeFile = (fileId: string) => {
     setUploadedFiles((prev) => prev.filter((f) => f.id !== fileId));
+    setUploadedCreatives((prev) => prev.filter((f) => f.id !== fileId));
   };
 
   const formatFileSize = (bytes: number) => {
@@ -112,9 +123,7 @@ export function CreativesUploadSection({
         }`}
       >
         <Upload className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-        <h4 className="text-foreground mb-2">
-          Drag & drop your creatives here
-        </h4>
+        <h4 className="text-foreground mb-2">Drag & drop your creatives here</h4>
         <p className="text-muted-foreground mb-4">or</p>
         <Button
           variant="outline"

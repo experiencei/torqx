@@ -191,11 +191,11 @@ export function TargetLocationSection({
                   Open Map
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-4xl">
+              <DialogContent className="max-w-4xl bg-background border border-border shadow-lg backdrop-blur-md">
                 <DialogHeader>
                   <DialogTitle>Available Screens Map</DialogTitle>
                 </DialogHeader>
-                <div className="space-y-4">
+                <div className="space-y-4 bg-background border border-border shadow-lg backdrop-blur-md">
                   {/* Mapbox Container */}
                   <div ref={mapRef} className="h-80 bg-muted rounded-lg"></div>
                   
@@ -255,3 +255,4 @@ export function TargetLocationSection({
     </Card>
   );
 }
+

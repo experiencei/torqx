@@ -16,6 +16,7 @@ import {
   Filter,
   MapPin,
   Eye,
+  Plus,
   Monitor,
   TrendingUp,
   Users,

@@ -29,11 +29,11 @@ export const storage = new Storage(client);
 // Database and Collection IDs
 export const DATABASE_ID = getEnvVar("APPWRITE_DATABASE_ID");
 export const COLLECTIONS = {
-  CAMPAIGNS: "torqxai",
-  VENUES: "screens",
-  CREATIVES: "torqxai",
-  PAYMENTS: "torqxai",
-  USER_GALLERIES: "torqxai",
+  CAMPAIGNS: "campaigns",
+  VENUES: "venues",
+  CREATIVES: "creatives",
+  PAYMENTS: "payments",
+  USER_GALLERIES: "user_galleries",
 };
 
 // Storage Bucket ID

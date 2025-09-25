@@ -8,8 +8,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from './ui/dropdown-menu';
 import { 
   Menu, Upload, Search, MoreHorizontal, Play, Image as ImageIcon, 
-  FileVideo, Calendar, Maximize, Tag, Link2, Plus, Eye, Edit3, Trash2
+  FileVideo, Calendar, Maximize, Tag, Plus, Eye, Edit3, Trash2
 } from 'lucide-react';
+
 import { useAuth } from '@/lib/Authcontext';
 import { appwriteService } from '@/lib/appwrite';
 import { toast } from 'sonner';

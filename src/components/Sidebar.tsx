@@ -56,30 +56,30 @@ export function Sidebar({ collapsed, currentPage, onPageChange, onToggleCollapse
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 p-4">
-          <div className="space-y-2">
-            {menuItems.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => {
-                  onPageChange(item.id);
-                  // Close sidebar on mobile after navigation
-                  if (window.innerWidth < 1024) {
-                    onToggleCollapse(true);
-                  }
-                }}
-                className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors whitespace-nowrap ${
-                  currentPage === item.id
-                    ? 'bg-purple-50 text-purple-600 border border-purple-200 dark:bg-purple-900/20 dark:text-purple-400 dark:border-purple-800' 
-                    : 'text-muted-foreground hover:text-foreground hover:bg-accent'
-                }`}
-              >
-                <item.icon className="w-5 h-5 flex-shrink-0" />
-                <span>{item.label}</span>
-              </button>
-            ))}
-          </div>
-        </nav>
+        {/* Navigation */}
+<nav className="flex-1 p-4">
+  <div className="space-y-2">
+    {menuItems.map((item) => (
+      <button
+        key={item.id}
+        onClick={() => {
+          onPageChange(item.id);
+          if (window.innerWidth < 1024) {
+            onToggleCollapse(true);
+          }
+        }}
+        className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors whitespace-nowrap ${
+          currentPage === item.id
+            ? 'bg-purple-50 text-purple-600 border border-purple-200 dark:bg-purple-900/20 dark:text-purple-400 dark:border-purple-800'
+            : 'text-gray-600 dark:text-gray-400 hover:text-foreground hover:bg-accent'
+        }`}
+      >
+        <item.icon className="w-5 h-5 flex-shrink-0" />
+        <span>{item.label}</span>
+      </button>
+    ))}
+  </div>
+</nav>
 
         {/* Bottom Section */}
         <div className="p-4 border-t border-border">

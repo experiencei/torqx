@@ -5,9 +5,9 @@ export const setupEnvironment = () => {
   if (typeof window !== 'undefined') {
     (window as any).__ENV__ = {
       APPWRITE_ENDPOINT: 'https://fra.cloud.appwrite.io/v1',
-      APPWRITE_PROJECT_ID: '68d0f5640038dcb583d3',
-      APPWRITE_DATABASE_ID: '68d546c5002442ba8d85',
-      APPWRITE_STORAGE_BUCKET_ID: '68d54819001c338ffb7e',
+      APPWRITE_PROJECT_ID: '68d9a0ed001391986ee3',
+      APPWRITE_DATABASE_ID: '68d9a2d900388514e285',
+      APPWRITE_STORAGE_BUCKET_ID: '68d9a3170029fca644f0',
       MAPBOX_ACCESS_TOKEN: 'pk.eyJ1IjoiZXhwZXJpZW5jZWlxIiwiYSI6ImNtZndmaGNtdjAxazUya3F2M2o4ZDNiaDAifQ.7Ykq_IIVcg8zgDRY0PxtRQ'
     };
   }

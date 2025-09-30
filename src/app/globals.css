@@ -12,13 +12,11 @@
 @layer components {
 
   .btn {
-
-    @apply  px-4 py-2 rounded-lg font-medium inline-flex items-center justify-center tracking-tight;
-
+    @apply px-4 py-2 rounded-lg font-medium inline-flex items-center justify-center tracking-tight;
   }
 
   .btn-primary {
-      @apply bg-black text-white;
+    @apply bg-black text-white;
   }
 
   .btn-text {
@@ -28,6 +26,7 @@
   .logo-ticker-image {
     @apply h-8 w-auto;
   }
+
   .tag {
     @apply text-sm inline-flex border border-[#222]/10 px-3 py-1 rounded-lg tracking-tight;
   }
@@ -52,8 +51,8 @@
     @apply px-4 py-1.5 rounded-full text-white/70 text-sm font-semibold hover:bg-white/10 hover:text-white transition duration-300;
   }
 
-  .hero-ring{
-    @apply absolute inset-0  border-2 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border-emerald-300/5 shadow-[0_0_80px_inset] shadow-emerald-300/5 ;
+  .hero-ring {
+    @apply absolute inset-0 border-2 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border-emerald-300/5 shadow-[0_0_80px_inset] shadow-emerald-300/5;
   }
 
   .section {
@@ -67,6 +66,101 @@
   .word {
     @apply translate-y-full;
   }
+}
 
+
+/* === Calendar layout fixes === */
+.my-calendar {
+  --calendar-day-size: 40px; /* adjust size */
+  box-sizing: border-box;
+}
+
+.my-calendar table {
+  width: 100%;
+  table-layout: fixed; /* equal column widths */
+  border-collapse: collapse;
+}
+
+.my-calendar table thead th,
+.my-calendar table tbody td {
+  width: calc(100% / 7);
+  padding: 0;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.my-calendar .rdp-day-btn,
+.my-calendar button.rdp-day-btn {
+  all: unset;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--calendar-day-size);
+  height: var(--calendar-day-size);
+  border-radius: 0.375rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+}
+
+.my-calendar .rdp-day-selected {
+  background-color: #7c3aed; /* purple */
+  color: #fff;
+}
+.my-calendar .rdp-day-today {
+  background-color: rgba(99, 102, 241, 0.08);
+}
+.my-calendar .rdp-day-outside {
+  color: #9ca3af;
+}
+
+.my-calendar .nav-btn,
+.my-calendar .nav-btn button {
+  all: unset;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  cursor: pointer;
+  opacity: 0.85;
+}
+
+.my-calendar .rdp-caption {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 4px 0;
+}
+
+.my-calendar .rdp-caption .rdp-nav {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 6px;
+  pointer-events: none;
+}
+
+.my-calendar .rdp-caption .rdp-nav .nav-btn {
+  pointer-events: auto;
+}
+
+.my-calendar .rdp-head-cell,
+.my-calendar .rdp-cell,
+.my-calendar .rdp-day-btn {
+  line-height: 1;
+}
+
+.my-calendar * {
+  box-sizing: border-box;
+}
+
+.my-calendar .rdp {
+  margin: 0;
+  padding: 0;
 }
 

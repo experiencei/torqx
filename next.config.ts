@@ -17,7 +17,8 @@ const nextConfig: NextConfig = {
       "images.pexels.com",
       "assets.lummi.ai",
       "i.postimg.cc",
-      "picsum.photos"
+      "picsum.photos",
+      "fra.cloud.appwrite.io"
     ],
   },
   

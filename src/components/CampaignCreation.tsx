@@ -260,8 +260,8 @@ export function CampaignCreation({ sidebarCollapsed, setSidebarCollapsed }: Camp
       </div>
 
       {/* Bottom Sticky CTA */}
-      <div className="sticky bottom-0 bg-background border-t border-border px-4 md:px-8 py-4">
-        <div className="flex flex-col sm:flex-row gap-3">
+      <div className="sticky bottom-0 bg-background border-t border-border px-4 md:px-8 py-4 bg-background/80 backdrop-blur-md shadow-xl border" >
+        <div className="flex flex-col sm:flex-row gap-3 ">
           <Button 
             variant="outline" 
             className="sm:w-auto"

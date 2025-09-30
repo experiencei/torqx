@@ -13,7 +13,7 @@ import Link from "next/link";
 const data = {
   facebookLink: "https://facebook.com/torqxai",
   instaLink: "https://instagram.com/torqxai",
-  twitterLink: "https://twitter.com/torqxai",
+  // twitterLink: "https://twitter.com/torqxai",
   linkedinLink: "https://linkedin.com/company/torqxai",
   products: {
     pulse: "/pulse",
@@ -39,7 +39,7 @@ const data = {
 const socialLinks = [
   { icon: Facebook, label: "Facebook", href: data.facebookLink },
   { icon: Instagram, label: "Instagram", href: data.instaLink },
-  { icon: Twitter, label: "Twitter", href: data.twitterLink },
+  // { icon: Twitter, label: "Twitter", href: data.twitterLink },
   { icon: Linkedin, label: "LinkedIn", href: data.linkedinLink },
 ];
 

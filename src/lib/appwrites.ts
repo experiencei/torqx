@@ -8,7 +8,7 @@ import {
 import { getEnvVar } from "./envs";
 
 const client = new Client();
-
+ 
 client
   .setEndpoint(getEnvVar("APPWRITE_ENDPOINT"))
   .setProject(getEnvVar("APPWRITE_PROJECT_ID"));
@@ -238,7 +238,7 @@ export const appwriteService = {
       throw error;
     }
   },
-
+ 
   // Screen Management
   async createScreen(screenData: any) {
     try {

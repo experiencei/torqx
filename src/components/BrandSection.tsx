@@ -73,7 +73,7 @@ export function BrandSection({
                 <SelectValue placeholder="Select industry" />
               </div>
             </SelectTrigger>
-            <SelectContent className="bg-background border border-border">
+            <SelectContent className="bg-background border border-border shadow-lg backdrop-blur-md">
               {industries.map((ind) => (
                 <SelectItem
                   key={ind}

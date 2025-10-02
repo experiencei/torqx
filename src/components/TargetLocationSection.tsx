@@ -101,8 +101,7 @@ export function TargetLocationSection({
     'South Africa',
     'Egypt',
     'Morocco',
-    'United States',
-    'United Kingdom'
+  
   ];
 
   const mockScreens = [
@@ -191,7 +190,7 @@ export function TargetLocationSection({
                   Open Map
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-4xl bg-background border border-border shadow-lg backdrop-blur-md">
+              <DialogContent className="max-w-4xl bg-background border border-border shadow-lg backdrop-blur-md  ">
                 <DialogHeader>
                   <DialogTitle>Available Screens Map</DialogTitle>
                 </DialogHeader>

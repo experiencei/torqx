@@ -32,6 +32,51 @@ export const STORAGE_BUCKET_ID = getEnvVar(
   "APPWRITE_STORAGE_BUCKET_ID",
 );
 
+// -----------------------
+// Playlist Item Helpers
+// -----------------------
+
+// Limit name length so serialized string doesn't explode
+const SHORT_NAME_MAX = 50;
+
+/**
+ * Convert a playlist item into a minimal JSON string for storage.
+ */
+function serializePlaylistItemForServer(item: any): string {
+  const minimum = {
+    id: item.id,
+    mediaId: item.mediaId,
+    duration: item.duration ?? 0,
+    order: item.order ?? 0,
+    media: {
+      name: (item.media?.name ?? "").toString().slice(0, SHORT_NAME_MAX),
+      type: item.media?.type ?? "image",
+      $id: item.media?.$id ?? item.mediaId ?? "",
+    },
+  };
+  return JSON.stringify(minimum);
+}
+
+/**
+ * Ensure playlist items are serialized strings that respect length limits.
+ */
+function ensureItemsAreServerFriendly(items: any[]): string[] {
+  return (items || []).map((it) => {
+    if (typeof it === "string") {
+      if (it.length > 4800) {
+        try {
+          const parsed = JSON.parse(it);
+          return serializePlaylistItemForServer(parsed);
+        } catch {
+          return it.slice(0, 4800); // fallback truncate
+        }
+      }
+      return it;
+    }
+    return serializePlaylistItemForServer(it);
+  });
+}
+
 export async function getLastUploadedFile(userId: string) {
   try {
     // Query MEDIA collection for the latest document belonging to this user
@@ -158,18 +203,18 @@ export const appwriteService = {
     }
   },
 
-  async getMediaFiles(userId: string) {
-    try {
-      const response = await databases.listDocuments(
-        DATABASE_ID,
-        COLLECTIONS.MEDIA,
-        [Query.equal("userId", userId), Query.orderDesc("$createdAt")],
-      );
-      return response;
-    } catch (error) {
-      throw error;
-    }
-  },
+  // async getMediaFiles(userId: string) {
+  //   try {
+  //     const response = await databases.listDocuments(
+  //       DATABASE_ID,
+  //       COLLECTIONS.MEDIA,
+  //       [Query.equal("userId", userId), Query.orderDesc("$createdAt")],
+  //     );
+  //     return response;
+  //   } catch (error) {
+  //     throw error;
+  //   }
+  // },
 
   async deleteMediaFile(fileId: string) {
     try {
@@ -185,115 +230,420 @@ export const appwriteService = {
   },
 
   // Playlist Management
-  async createPlaylist(playlistData: any) {
+  // async createPlaylist(playlistData: any) {
+  //   try {
+  //     const response = await databases.createDocument(
+  //       DATABASE_ID,
+  //       COLLECTIONS.PLAYLISTS,
+  //       "unique()",
+  //       playlistData,
+  //     );
+  //     return response;
+  //   } catch (error) {
+  //     throw error;
+  //   }
+  // },
+
+  // async getPlaylists(userId: string) {
+  //   try {
+  //     const response = await databases.listDocuments(
+  //       DATABASE_ID,
+  //       COLLECTIONS.PLAYLISTS,
+  //       [Query.equal("userId", userId), Query.orderDesc("$createdAt")],
+  //     );
+  //     return response;
+  //   } catch (error) {
+  //     throw error;
+  //   }
+  // },
+
+
+  async getPlaylists(userId?: string) {
     try {
-      const response = await databases.createDocument(
+      const queries: any[] = [Query.orderDesc("$createdAt")];
+      if (userId) queries.unshift(Query.equal("userId", userId));
+      console.log("Fetching playlists for user:", userId);
+      const res = await databases.listDocuments(
+        DATABASE_ID,
+        COLLECTIONS.PLAYLISTS,
+        queries
+      );
+      console.log("Playlists fetched:", (res && res.documents) || res);
+      return res;
+    } catch (err) {
+      console.error("getPlaylists error:", err);
+      throw err;
+    }
+  } ,
+
+  async getPlaylist(playlistId: string) {
+    try {
+      const res = await databases.getDocument(
+        DATABASE_ID,
+        COLLECTIONS.PLAYLISTS,
+        playlistId
+      );
+      console.log("getPlaylist:", playlistId, res);
+      return res;
+    } catch (err) {
+      console.error("getPlaylist error:", playlistId, err);
+      throw err;
+    }
+  } , 
+
+  async createPlaylist(payload: any) {
+    try {
+      console.log("Creating playlist with payload (raw):", payload);
+
+      // Ensure items are converted to sanitized strings (if the server collection expects array<string>)
+      const serverPayload = {
+        ...payload,
+        items: ensureItemsAreServerFriendly(payload.items || []),
+        // store schedule as string to be safe if your schema expects a string
+        schedule:
+          typeof payload.schedule === "string"
+            ? payload.schedule
+            : JSON.stringify(payload.schedule ?? {}),
+      };
+
+      console.log("Creating playlist (server payload):", serverPayload);
+
+      const doc = await databases.createDocument(
         DATABASE_ID,
         COLLECTIONS.PLAYLISTS,
         "unique()",
-        playlistData,
+        serverPayload
       );
-      return response;
-    } catch (error) {
-      throw error;
-    }
-  },
 
-  async getPlaylists(userId: string) {
-    try {
-      const response = await databases.listDocuments(
-        DATABASE_ID,
-        COLLECTIONS.PLAYLISTS,
-        [Query.equal("userId", userId), Query.orderDesc("$createdAt")],
-      );
-      return response;
-    } catch (error) {
-      throw error;
+      console.log("Playlist created:", doc);
+      return doc;
+    } catch (err) {
+      console.error("createPlaylist error:", err);
+      throw err;
     }
-  },
+  } ,
 
-  async updatePlaylist(playlistId: string, data: any) {
+  async updatePlaylist(playlistId: string, payload: any) {
     try {
-      const response = await databases.updateDocument(
+      console.log("Updating playlist:", playlistId, payload);
+
+      const serverPayload = {
+        ...payload,
+      };
+
+      // If items present, sanitize
+      if (payload.items) {
+        serverPayload.items = ensureItemsAreServerFriendly(payload.items);
+      }
+
+      if (payload.schedule && typeof payload.schedule !== "string") {
+        serverPayload.schedule = JSON.stringify(payload.schedule);
+      }
+
+      const doc = await databases.updateDocument(
         DATABASE_ID,
         COLLECTIONS.PLAYLISTS,
         playlistId,
-        data,
+        serverPayload
       );
-      return response;
-    } catch (error) {
-      throw error;
+
+      console.log("Playlist updated:", doc);
+      return doc;
+    } catch (err) {
+      console.error("updatePlaylist error:", playlistId, err);
+      throw err;
     }
-  },
+  } ,
 
   async deletePlaylist(playlistId: string) {
     try {
-      const response = await databases.deleteDocument(
+      console.log("Deleting playlist:", playlistId);
+      const res = await databases.deleteDocument(
         DATABASE_ID,
         COLLECTIONS.PLAYLISTS,
-        playlistId,
+        playlistId
       );
-      return response;
-    } catch (error) {
-      throw error;
+      console.log("Deleted playlist:", playlistId, res);
+      return res;
+    } catch (err) {
+      console.error("deletePlaylist error:", playlistId, err);
+      throw err;
+    }
+  } ,
+
+  // -----------------------
+  // Media helpers (per-playlist media items)
+  // -----------------------
+  async getMediaFiles(userId?: string) {
+    try {
+      const queries: any[] = [Query.orderAsc("order")];
+      if (userId) queries.unshift(Query.equal("userId", userId));
+      console.log("Fetching media files for user:", userId);
+      const res = await databases.listDocuments(
+        DATABASE_ID,
+        COLLECTIONS.MEDIA,
+        queries
+      );
+      console.log("Media fetched:", res.documents ?? res);
+      return res;
+    } catch (err) {
+      console.error("getMediaFiles error:", err);
+      throw err;
+    }
+  } ,
+  /**
+   * Upsert a media doc in `media` collection.
+   * - If `mediaId` is an existing doc id => update it
+   * - Otherwise try find by fileId or externalUrl, update if found
+   * - Otherwise create a new document
+   *
+   * This function logs debug info for tracing.
+   */
+  async upsertMedia(mediaIdOrFileId: string | undefined | null, payload: any) {
+    try {
+      console.log("upsertMedia called with id/fileId:", mediaIdOrFileId, "payload:", payload);
+
+      // 1) If mediaIdOrFileId looks like a doc id, try getDocument
+      if (mediaIdOrFileId) {
+        try {
+          const existing = await databases.getDocument(
+            DATABASE_ID,
+        COLLECTIONS.MEDIA,
+            mediaIdOrFileId
+          );
+          // If found, update
+          console.log("upsertMedia -> found existing by doc id:", existing.$id);
+          const updated = await databases.updateDocument(
+            DATABASE_ID,
+        COLLECTIONS.MEDIA,
+            existing.$id,
+            payload
+          );
+          console.log("upsertMedia -> updated:", updated);
+          return updated;
+        } catch (errInner) {
+          // not found by id -> continue to try search by fileId / externalUrl
+          console.log("upsertMedia: not found by doc id, will try by fileId/externalUrl");
+        }
+      }
+
+      // 2) Try finding by fileId (if payload.fileId or mediaIdOrFileId looks like a fileId)
+      const fileIdToSearch = payload.fileId ?? mediaIdOrFileId;
+      if (fileIdToSearch) {
+        try {
+          const list = await databases.listDocuments(
+            DATABASE_ID,
+        COLLECTIONS.MEDIA,
+            [Query.equal("fileId", fileIdToSearch), Query.limit(1)]
+          );
+          if (list && Array.isArray(list.documents) && list.documents.length > 0) {
+            const doc = list.documents[0];
+            console.log("upsertMedia -> found by fileId:", doc.$id);
+            const updated = await databases.updateDocument(
+              DATABASE_ID,
+        COLLECTIONS.MEDIA,
+              doc.$id,
+              payload
+            );
+            console.log("upsertMedia -> updated by fileId:", updated);
+            return updated;
+          }
+        } catch (err) {
+          console.warn("upsertMedia: search by fileId failed:", err);
+        }
+      }
+
+      // 3) Try finding by externalUrl if present
+      if (payload.externalUrl) {
+        try {
+          const list = await databases.listDocuments(
+            DATABASE_ID,
+        COLLECTIONS.MEDIA,
+            [Query.equal("externalUrl", payload.externalUrl), Query.limit(1)]
+          );
+          if (list && Array.isArray(list.documents) && list.documents.length > 0) {
+            const doc = list.documents[0];
+            console.log("upsertMedia -> found by externalUrl:", doc.$id);
+            const updated = await databases.updateDocument(
+              DATABASE_ID,
+        COLLECTIONS.MEDIA,
+              doc.$id,
+              payload
+            );
+            console.log("upsertMedia -> updated by externalUrl:", updated);
+            return updated;
+          }
+        } catch (err) {
+          console.warn("upsertMedia: search by externalUrl failed:", err);
+        }
+      }
+
+      // 4) Not found -> create
+      console.log("upsertMedia -> creating new media doc with payload:", payload);
+      const created = await databases.createDocument(
+        DATABASE_ID,
+        COLLECTIONS.MEDIA,
+        "unique()",
+        payload
+      );
+      console.log("upsertMedia -> created:", created);
+      return created;
+    } catch (err) {
+      console.error("upsertMedia error:", err);
+      throw err;
     }
   },
+
+  // async updatePlaylist(playlistId: string, data: any) {
+  //   try {
+  //     const response = await databases.updateDocument(
+  //       DATABASE_ID,
+  //       COLLECTIONS.PLAYLISTS,
+  //       playlistId,
+  //       data,
+  //     );
+  //     return response;
+  //   } catch (error) {
+  //     throw error;
+  //   }
+  // },
+
+  // async deletePlaylist(playlistId: string) {
+  //   try {
+  //     const response = await databases.deleteDocument(
+  //       DATABASE_ID,
+  //       COLLECTIONS.PLAYLISTS,
+  //       playlistId,
+  //     );
+  //     return response;
+  //   } catch (error) {
+  //     throw error;
+  //   }
+  // },
  
   // Screen Management
-  async createScreen(screenData: any) {
+  // async createScreen(screenData: any) {
+  //   try {
+  //     const response = await databases.createDocument(
+  //       DATABASE_ID,
+  //       COLLECTIONS.SCREENS,
+  //       "unique()",
+  //       screenData,
+  //     );
+  //     return response;
+  //   } catch (error) {
+  //     throw error;
+  //   }
+  // },
+
+  // async getScreens(userId: string) {
+  //   try {
+  //     const response = await databases.listDocuments(
+  //       DATABASE_ID,
+  //       COLLECTIONS.SCREENS,
+  //       [Query.equal("userId", userId), Query.orderDesc("$createdAt")],
+  //     );
+  //     return response;
+  //   } catch (error) {
+  //     throw error;
+  //   }
+  // },
+
+  // async updateScreen(screenId: string, data: any) {
+  //   try {
+  //     const response = await databases.updateDocument(
+  //       DATABASE_ID,
+  //       COLLECTIONS.SCREENS,
+  //       screenId,
+  //       data,
+  //     );
+  //     return response;
+  //   } catch (error) {
+  //     throw error;
+  //   }
+  // },
+
+  // async deleteScreen(screenId: string) {
+  //   try {
+  //     const response = await databases.deleteDocument(
+  //       DATABASE_ID,
+  //       COLLECTIONS.SCREENS,
+  //       screenId,
+  //     );
+  //     return response;
+  //   } catch (error) {
+  //     throw error;
+  //   }
+  // },
+
+
+  async getScreens(userId?: string) {
     try {
-      const response = await databases.createDocument(
+      const queries: any[] = [Query.orderDesc("$createdAt")];
+      if (userId) queries.unshift(Query.equal("userId", userId));
+      console.log("Fetching screens for user:", userId);
+      const res = await databases.listDocuments(
+       DATABASE_ID,
+        COLLECTIONS.SCREENS,
+        queries
+      );
+      console.log("Screens fetched:", res.documents ?? res);
+      return res;
+    } catch (err) {
+      console.error("getScreens error:", err);
+      throw err;
+    }
+  },
+
+  async createScreen(payload: any) {
+    try {
+      console.log("createScreen payload:", payload);
+      const doc = await databases.createDocument(
         DATABASE_ID,
         COLLECTIONS.SCREENS,
         "unique()",
-        screenData,
+        payload
       );
-      return response;
-    } catch (error) {
-      throw error;
+      console.log("Screen created:", doc);
+      return doc;
+    } catch (err) {
+      console.error("createScreen error:", err);
+      throw err;
     }
   },
 
-  async getScreens(userId: string) {
+  async updateScreen(screenId: string, payload: any) {
     try {
-      const response = await databases.listDocuments(
-        DATABASE_ID,
-        COLLECTIONS.SCREENS,
-        [Query.equal("userId", userId), Query.orderDesc("$createdAt")],
-      );
-      return response;
-    } catch (error) {
-      throw error;
-    }
-  },
-
-  async updateScreen(screenId: string, data: any) {
-    try {
-      const response = await databases.updateDocument(
+      console.log("updateScreen:", screenId, payload);
+      const doc = await databases.updateDocument(
         DATABASE_ID,
         COLLECTIONS.SCREENS,
         screenId,
-        data,
+        payload
       );
-      return response;
-    } catch (error) {
-      throw error;
+      console.log("Screen updated:", doc);
+      return doc;
+    } catch (err) {
+      console.error("updateScreen error:", screenId, err);
+      throw err;
     }
   },
 
   async deleteScreen(screenId: string) {
     try {
-      const response = await databases.deleteDocument(
+      console.log("deleteScreen:", screenId);
+      const res = await databases.deleteDocument(
         DATABASE_ID,
         COLLECTIONS.SCREENS,
-        screenId,
+        screenId
       );
-      return response;
-    } catch (error) {
-      throw error;
+      console.log("Screen deleted:", screenId, res);
+      return res;
+    } catch (err) {
+      console.error("deleteScreen error:", screenId, err);
+      throw err;
     }
   },
-
   
 
   // Business Profile Management
@@ -343,29 +693,7 @@ export const appwriteService = {
     return Math.random().toString(36).substr(2, 8).toUpperCase();
   },
 
-  // async getFilePreview(fileId: string) {
-  //   try {
-  //     const url = storage.getFilePreview(
-  //       STORAGE_BUCKET_ID,
-  //       fileId,
-  //     );
-  //     return url;
-  //   } catch (error) {
-  //     throw error;
-  //   }
-  // },
 
-  // async getFileView(fileId: string) {
-  //   try {
-  //     const url = storage.getFileView(
-  //       STORAGE_BUCKET_ID,
-  //       fileId,
-  //     );
-  //     return url;
-  //   } catch (error) {
-  //     throw error;
-  //   }
-  // },
 
  async getFilePreview(fileId: string) {
     try {
@@ -404,24 +732,6 @@ export function resolveFileUrl(fileId: string): string {
   if (!fileId) return "";
   return `${client.config.endpoint}/storage/buckets/${STORAGE_BUCKET_ID}/files/${fileId}/view?project=${client.config.project}`;
 }
-
-// export async function getLastUploadedFile() {
-//   try {
-//     const res = await storage.listFiles(STORAGE_BUCKET_ID);
-//     if (!res.files.length) return null;
-
-//     // sort descending by $createdAt
-//     const sorted = res.files.sort(
-//       (a, b) => new Date(b.$createdAt).getTime() - new Date(a.$createdAt).getTime()
-//     );
-
-//     return sorted[0]; // last uploaded
-//   } catch (err) {
-//     console.error("Error fetching last uploaded file:", err);
-//     return null;
-//   }
-// }
-
 
 
 

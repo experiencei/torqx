@@ -741,60 +741,130 @@ export function ScreenManager({ sidebarCollapsed, setSidebarCollapsed }: ScreenM
   };
 
   // Assign playlist -> passes both id and name
+  // const handleAssignPlaylist = async (screenId: string, playlistId: string, playlistName: string) => {
+  //   try {
+  //     const updated = await appwriteService.updateScreen(screenId, {
+  //       currentPlaylist: playlistId,
+  //       playlistName,
+  //     });
+
+  //     // Normalize result
+  //     const normalized: Screen = {
+  //       $id: updated.$id,
+  //       $createdAt: updated.$createdAt,
+  //       name: updated.name,
+  //       location: updated.location,
+  //       pairingCode: updated.pairingCode,
+  //       status: updated.status as "online" | "offline" | "error",
+  //       currentPlaylist: updated.currentPlaylist ?? undefined,
+  //       playlistName: updated.playlistName ?? undefined,
+  //       lastSeen: updated.lastSeen,
+  //       deviceInfo: updated.deviceInfo || undefined,
+  //       userId: updated.userId,
+  //     };
+
+  //     setScreens((prev) => prev.map((s) => (s.$id === screenId ? normalized : s)));
+  //   } catch (error) {
+  //     console.error("Error assigning playlist:", error);
+  //   }
+  // };
+
   const handleAssignPlaylist = async (screenId: string, playlistId: string, playlistName: string) => {
-    try {
-      const updated = await appwriteService.updateScreen(screenId, {
-        currentPlaylist: playlistId,
-        playlistName,
+  try {
+    // 1. Update screen
+    const updatedScreen = await appwriteService.updateScreen(screenId, {
+      currentPlaylist: playlistId,
+      playlistName,
+    });
+
+    // 2. Update playlist: add this screenId into assignedScreens[]
+    const playlistDoc = await appwriteService.getPlaylist(playlistId);
+    const currentScreens: string[] = Array.isArray(playlistDoc.assignedScreens)
+      ? playlistDoc.assignedScreens
+      : [];
+
+    const updatedScreens = Array.from(new Set([...currentScreens, screenId]));
+
+    await appwriteService.updatePlaylist(playlistId, {
+      assignedScreens: updatedScreens,
+      screenId: screenId,
+    });
+
+    // 3. Update state in React
+    const normalized: Screen = {
+      $id: updatedScreen.$id,
+      $createdAt: updatedScreen.$createdAt,
+      name: updatedScreen.name,
+      location: updatedScreen.location,
+      pairingCode: updatedScreen.pairingCode,
+      status: updatedScreen.status as "online" | "offline" | "error",
+      currentPlaylist: updatedScreen.currentPlaylist ?? undefined,
+      playlistName: updatedScreen.playlistName ?? undefined,
+      lastSeen: updatedScreen.lastSeen,
+      deviceInfo: updatedScreen.deviceInfo || undefined,
+      userId: updatedScreen.userId,
+    };
+
+    setScreens((prev) =>
+      prev.map((s) => (s.$id === screenId ? normalized : s))
+    );
+
+    // Optionally reload playlists so UI reflects updated counts
+    await loadPlaylists();
+  } catch (error) {
+    console.error("Error assigning playlist:", error);
+  }
+};
+
+
+
+const handleRemovePlaylist = async (screenId: string, playlistId?: string) => {
+  try {
+    // 1. Update screen: clear current playlist
+    const updatedScreen = await appwriteService.updateScreen(screenId, {
+      currentPlaylist: null,
+      playlistName: null,
+    });
+
+    // 2. Update playlist: remove this screenId from assignedScreens[]
+    if (playlistId) {
+      const playlistDoc = await appwriteService.getPlaylist(playlistId);
+      const currentScreens: string[] = Array.isArray(playlistDoc.assignedScreens)
+        ? playlistDoc.assignedScreens
+        : [];
+
+      const updatedScreens = currentScreens.filter((id) => id !== screenId);
+
+      await appwriteService.updatePlaylist(playlistId, {
+        assignedScreens: updatedScreens,
       });
-
-      // Normalize result
-      const normalized: Screen = {
-        $id: updated.$id,
-        $createdAt: updated.$createdAt,
-        name: updated.name,
-        location: updated.location,
-        pairingCode: updated.pairingCode,
-        status: updated.status as "online" | "offline" | "error",
-        currentPlaylist: updated.currentPlaylist ?? undefined,
-        playlistName: updated.playlistName ?? undefined,
-        lastSeen: updated.lastSeen,
-        deviceInfo: updated.deviceInfo || undefined,
-        userId: updated.userId,
-      };
-
-      setScreens((prev) => prev.map((s) => (s.$id === screenId ? normalized : s)));
-    } catch (error) {
-      console.error("Error assigning playlist:", error);
     }
-  };
 
-  const handleRemovePlaylist = async (screenId: string) => {
-    try {
-      const updated = await appwriteService.updateScreen(screenId, {
-        currentPlaylist: null,
-        playlistName: null,
-      });
+    // 3. Update state in React
+    const normalized: Screen = {
+      $id: updatedScreen.$id,
+      $createdAt: updatedScreen.$createdAt,
+      name: updatedScreen.name,
+      location: updatedScreen.location,
+      pairingCode: updatedScreen.pairingCode,
+      status: updatedScreen.status as "online" | "offline" | "error",
+      currentPlaylist: updatedScreen.currentPlaylist ?? undefined,
+      playlistName: updatedScreen.playlistName ?? undefined,
+      lastSeen: updatedScreen.lastSeen,
+      deviceInfo: updatedScreen.deviceInfo || undefined,
+      userId: updatedScreen.userId,
+    };
 
-      const normalized: Screen = {
-        $id: updated.$id,
-        $createdAt: updated.$createdAt,
-        name: updated.name,
-        location: updated.location,
-        pairingCode: updated.pairingCode,
-        status: updated.status as "online" | "offline" | "error",
-        currentPlaylist: updated.currentPlaylist ?? undefined,
-        playlistName: updated.playlistName ?? undefined,
-        lastSeen: updated.lastSeen,
-        deviceInfo: updated.deviceInfo || undefined,
-        userId: updated.userId,
-      };
+    setScreens((prev) =>
+      prev.map((s) => (s.$id === screenId ? normalized : s))
+    );
 
-      setScreens((prev) => prev.map((s) => (s.$id === screenId ? normalized : s)));
-    } catch (error) {
-      console.error("Error removing playlist:", error);
-    }
-  };
+    await loadPlaylists();
+  } catch (error) {
+    console.error("Error removing playlist:", error);
+  }
+};
+
 
   const formatLastSeen = (dateString: string) => {
     const now = new Date();

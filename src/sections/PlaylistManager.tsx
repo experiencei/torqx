@@ -2232,7 +2232,7 @@ export  function PlaylistManager({ sidebarCollapsed, setSidebarCollapsed }: Play
         $id: doc.$id,
         name: doc.name ?? 'Untitled',
         type: doc.type ?? 'image',
-        url: doc.url ?? doc.externalUrl ?? '',
+        url: doc.externalUrl ?? doc.url ?? '',
         duration: doc.duration ?? 10,
         size: doc.size ?? 0,
       }));
@@ -2385,45 +2385,56 @@ const mappedPlaylists: Playlist[] = (playlistDocs as any[]).map((doc: any) => {
   };
 
   // Persist playlist to server. We stringify `items` and `schedule` when sending to Appwrite (common pattern).
-  // const handleSavePlaylist = async () => {
-  //   try {
-  //     if (!user) throw new Error('Not authenticated');
 
-  //     const totalDuration = playlistItems.reduce((acc, item) => acc + (item.duration || 0), 0);
+// const handleSavePlaylist = async () => {
+//   try {
+//     if (!user) throw new Error("Not authenticated");
 
-  //     const schedulePayload = {
-  //       startDate: formData.startDate?.toISOString?.() ?? new Date().toISOString(),
-  //       endDate: formData.endDate?.toISOString?.() ?? new Date().toISOString(),
-  //       startTime: formData.startTime || '09:00',
-  //       endTime: formData.endTime || '17:00',
-  //       days: Array.isArray(formData.days) ? formData.days : [],
-  //     };
+//     const totalDuration = playlistItems.reduce(
+//       (acc, item) => acc + (item.duration || 0),
+//       0
+//     );
 
-  //     const payloadForServer: any = {
-  //       name: formData.name,
-  //       description: formData.description,
-  //       items: JSON.stringify(playlistItems.map(i => ({ id: i.id, mediaId: i.mediaId, duration: i.duration, order: i.order, media: i.media }))),
-  //       totalDuration,
-  //       isActive: formData.isActive,
-  //       schedule: JSON.stringify(schedulePayload),
-  //       assignedScreens: JSON.stringify(editingPlaylist?.assignedScreens ?? []),
-  //       userId: user.$id,
-  //     };
+//     const scheduleData = {
+//       startDate: formData.startDate?.toISOString?.() || "",
+//       endDate: formData.endDate?.toISOString?.() || "",
+//       startTime: formData.startTime || "",
+//       endTime: formData.endTime || "",
+//       days: formData.days || [],
+//     };
 
-  //     if (editingPlaylist) {
-  //       await appwriteService.updatePlaylist(editingPlaylist.$id, payloadForServer);
-  //     } else {
-  //       await appwriteService.createPlaylist(payloadForServer);
-  //     }
+//     const payload = {
+//       $id: editingPlaylist?.$id || `playlist_${Date.now()}`,
+//       $createdAt: editingPlaylist?.$createdAt || new Date().toISOString(),
+//       name: formData.name,
+//       description: formData.description,
+//       // ✅ stringify each playlist item
+//       items: playlistItems.map((item) => JSON.stringify(item)),
+//       totalDuration,
+//       isActive: formData.isActive,
+//       // also stringify schedule if Appwrite expects string
+//       schedule: JSON.stringify(scheduleData),
+//       assignedScreens: editingPlaylist?.assignedScreens || [],
+//       userId: user?.$id ?? "unknown",
+//     };
 
-  //     // reload state from server to make sure UI matches backend and avoid stale data
-  //     await loadData();
-  //     setShowCreateDialog(false);
-  //   } catch (err) {
-  //     console.error('Error saving playlist:', err);
-  //     alert('Failed to save playlist. See console for details.');
-  //   }
-  // };
+//     if (editingPlaylist) {
+//       setPlaylists((prev) =>
+//         prev.map((p) =>
+//           p.$id === editingPlaylist.$id ? (payload as any) : p
+//         )
+//       );
+//       await appwriteService.updatePlaylist(payload.$id, payload);
+//     } else {
+//       setPlaylists((prev) => [payload as any, ...prev]);
+//       await appwriteService.createPlaylist(payload);
+//     }
+
+//     setShowCreateDialog(false);
+//   } catch (error) {
+//     console.error("Error saving playlist:", error);
+//   }
+// };
 
 const handleSavePlaylist = async () => {
   try {
@@ -2442,36 +2453,108 @@ const handleSavePlaylist = async () => {
       days: formData.days || [],
     };
 
-    const payload = {
-      $id: editingPlaylist?.$id || `playlist_${Date.now()}`,
-      $createdAt: editingPlaylist?.$createdAt || new Date().toISOString(),
-      name: formData.name,
-      description: formData.description,
-      // ✅ stringify each playlist item
-      items: playlistItems.map((item) => JSON.stringify(item)),
-      totalDuration,
-      isActive: formData.isActive,
-      // also stringify schedule if Appwrite expects string
-      schedule: JSON.stringify(scheduleData),
-      assignedScreens: editingPlaylist?.assignedScreens || [],
-      userId: user?.$id ?? "unknown",
-    };
+const playlistPayload = {
+  name: formData.name,
+  description: formData.description,
+  items: playlistItems.map((item) =>
+    JSON.stringify({
+      id: item.id,
+      mediaId: item.mediaId,
+      duration: item.duration,
+      order: item.order,
+    })
+  ),
+  totalDuration,
+  isActive: formData.isActive,
+  status: formData.isActive ? "active" : "inactive",  // ✅ new
+  schedule: JSON.stringify(scheduleData),
+  assignedScreens: editingPlaylist?.assignedScreens || [],
+  userId: user?.$id ?? "unknown",
+};
 
+    // ------------------------------
+    // 1. Create or update playlist doc
+    // // ------------------------------
+    // const playlistPayload = {
+    //   name: formData.name,
+    //   description: formData.description,
+    //   items: playlistItems.map((item) =>
+    //     JSON.stringify({
+    //       id: item.id,
+    //       mediaId: item.mediaId,
+    //       duration: item.duration,
+    //       order: item.order,
+    //     })
+    //   ),
+    //   totalDuration,
+    //   isActive: formData.isActive,
+    //   schedule: JSON.stringify(scheduleData),
+    //   assignedScreens: editingPlaylist?.assignedScreens || [],
+    //   userId: user?.$id ?? "unknown",
+    // };
+
+    let playlistId: string;
     if (editingPlaylist) {
-      setPlaylists((prev) =>
-        prev.map((p) =>
-          p.$id === editingPlaylist.$id ? (payload as any) : p
-        )
-      );
-      await appwriteService.updatePlaylist(payload.$id, payload);
+      playlistId = editingPlaylist.$id;
+      await appwriteService.updatePlaylist(playlistId, playlistPayload);
     } else {
-      setPlaylists((prev) => [payload as any, ...prev]);
-      await appwriteService.createPlaylist(payload);
+      const created = await appwriteService.createPlaylist(playlistPayload);
+      playlistId = created.$id; // ✅ grab new playlist ID
     }
 
+    // ------------------------------
+    // 2. Ensure each media item has a media doc
+    // ------------------------------
+    for (let i = 0; i < playlistItems.length; i++) {
+      const item = playlistItems[i];
+
+// const mediaPayload = {
+//   name: item.media?.name ?? "Unnamed",             // ✅ required
+//   originalName: item.media?.originalName ?? "N/A", // ✅ required
+//   type: item.media?.type ?? "image",               // ✅ required
+//   size: item.media?.size ?? 0,                     // ✅ required
+//   externalUrl: item.media?.url ?? "",              // ✅ required
+//   fileId: item.media?.fileId ?? "",                // ✅ required
+//   duration: item.duration ?? 0,                    // optional
+//   thumbnailUrl: item.media?.thumbnailUrl ?? "",    // optional
+//   userId: user?.$id ?? "unknown",                  // ✅ required
+//   status: "active",                                // optional
+//   playlistId,                                      // optional
+//   order: i                                         // optional
+// };
+
+const mediaPayload = {
+  name: item.media?.name ?? "Unnamed",
+  originalName: item.media?.originalName ?? "N/A",
+  type: item.media?.type ?? "image",
+  size: item.media?.size ?? 0,
+  externalUrl: item.media?.externalUrl ?? item.media?.url ?? "",
+  fileId: item.media?.fileId ?? "",
+  duration: item.duration ?? 0,
+  thumbnailUrl: item.media?.thumbnailUrl ?? "",
+  userId: user?.$id ?? "unknown",
+  status: "active",          // ✅ force always
+  playlistId: playlistId,    // ✅ always link to playlist
+  order: i
+};
+
+
+      try {
+        // if media already exists, update instead of duplicate
+        await appwriteService.upsertMedia(item.mediaId, mediaPayload);
+      } catch (err) {
+        console.error("⚠️ Failed to upsert media:", err);
+      }
+    }
+
+    // ------------------------------
+    // 3. Reload UI
+    // ------------------------------
+    await loadData();
     setShowCreateDialog(false);
   } catch (error) {
-    console.error("Error saving playlist:", error);
+    console.error("❌ Error saving playlist:", error);
+    alert("Failed to save playlist. See console for details.");
   }
 };
 

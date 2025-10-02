@@ -667,19 +667,49 @@ export function MediaLibrary({ sidebarCollapsed, setSidebarCollapsed }: MediaLib
     console.log("res22" , files)
 
     // Cast into MediaFile[] (our frontend format)
-    const mediaFilesResolved: MediaFile[] = files.map((doc: any) => ({
-      $id: doc.$id,
-      $createdAt: doc.$createdAt,
-      name: doc.name,
-      originalName: doc.originalName,
-      type: doc.type,
-      size: doc.size,
-      url: doc.url,  // already guaranteed working view url
-      fileId: doc.fileId,
-      duration: doc.duration,
-      thumbnailUrl: doc.thumbnailUrl,
-      userId: doc.userId,
-    }));
+    // const mediaFilesResolved: MediaFile[] = files.map((doc: any) => ({
+    //   $id: doc.$id,
+    //   $createdAt: doc.$createdAt,
+    //   name: doc.name,
+    //   originalName: doc.originalName,
+    //   type: doc.type,
+    //   size: doc.size,
+    //   url: doc.externalUrl,  // already guaranteed working view url
+    //   fileId: doc.fileId,
+    //   duration: doc.duration,
+    //   thumbnailUrl: doc.thumbnailUrl,
+    //   userId: doc.userId,
+    // }));
+
+const mediaFilesResolved: MediaFile[] = files.map((doc: any) => {
+  let resolvedUrl = doc.externalUrl || doc.url || "";
+  if (!resolvedUrl && doc.fileId) {
+    try {
+      // fallback: ask storage for view/preview
+      resolvedUrl = appwriteService.getFilePreview
+        ? appwriteService.getFilePreview(doc.fileId)
+        : appwriteService.getFileView(doc.fileId);
+    } catch (err) {
+      console.error("⚠️ Could not resolve file URL:", doc.fileId, err);
+      resolvedUrl = "";
+    }
+  }
+
+  return {
+    $id: doc.$id,
+    $createdAt: doc.$createdAt,
+    name: doc.name,
+    originalName: doc.originalName,
+    type: doc.type,
+    size: doc.size,
+    url: resolvedUrl,          // ✅ always set
+    fileId: doc.fileId,
+    duration: doc.duration,
+    thumbnailUrl: doc.thumbnailUrl,
+    userId: doc.userId,
+  };
+});
+
 
     setMediaFiles(mediaFilesResolved);
   } catch (error) {
@@ -757,7 +787,7 @@ export function MediaLibrary({ sidebarCollapsed, setSidebarCollapsed }: MediaLib
           type: file.type.startsWith('image/') ? 'image' : 'video',
           size: file.size,
           fileId: uploadResponse.$id,
-          url: resolvedUrl,
+          externalUrl : resolvedUrl,
           userId: user!.$id,
           duration: file.type.startsWith('video/') ? 30 : undefined
         };
@@ -772,7 +802,7 @@ export function MediaLibrary({ sidebarCollapsed, setSidebarCollapsed }: MediaLib
           originalName: mediaResponse.originalName || mediaData.originalName,
           type: mediaResponse.type || mediaData.type,
           size: mediaResponse.size || mediaData.size,
-          url: mediaResponse.url || mediaData.url || resolvedUrl,
+          url: mediaResponse.externalUrl  || mediaData.externalUrl  || resolvedUrl,
           fileId: mediaResponse.fileId || mediaData.fileId,
           duration: mediaResponse.duration || mediaData.duration,
           thumbnailUrl: mediaResponse.thumbnailUrl || undefined,

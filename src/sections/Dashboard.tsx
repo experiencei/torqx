@@ -452,8 +452,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { useAuth } from '@/lib/Authcontexts';
-import { databases, DATABASE_ID, appwriteService , getLastUploadedFile, resolveFileUrl  } from '@/lib/appwrites';
-import { Query } from 'appwrite';
+import { appwriteService, getLastUploadedFile } from '@/lib/appwrites';
 import { 
   Menu, 
   Monitor, 
@@ -461,7 +460,6 @@ import {
   List, 
   Play, 
   Pause,
-  Clock,
   TrendingUp,
   Activity,
   Calendar as CalendarIcon,
@@ -498,114 +496,92 @@ export function Dashboard({ sidebarCollapsed, setSidebarCollapsed, onPageChange 
   });
   const [currentMedia, setCurrentMedia] = useState<any>(null);
   const [recentActivity, setRecentActivity] = useState<RecentActivity[]>([]);
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
+  const [scheduledDates, setScheduledDates] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [quickStartOpen, setQuickStartOpen] = useState(false);
   const [quickStartAction, setQuickStartAction] = useState<'upload' | 'playlist' | 'screen'>('upload');
-  const [scheduledDates, setScheduledDates] = useState<string[]>([]);
   const [latestFile, setLatestFile] = useState<any>(null);
 
-useEffect(() => {
-  if (!user) return;
+  // Load latest uploaded file
+  useEffect(() => {
+    if (!user) return;
+    const fetchLatest = async () => {
+      const file = await getLastUploadedFile(user.$id);
+      setLatestFile(file);
+    };
+    fetchLatest();
+  }, [user]);
 
-  const fetchLatest = async () => {
-    const file = await getLastUploadedFile(user.$id);
-    setLatestFile(file);
-    console.log("file" , file)
-  };
-
-
-
-  fetchLatest();
-}, [user]);
-
+  // Load dashboard stats + activity
+  useEffect(() => {
+    if (!user) return;
+    loadDashboardData();
+  }, [user]);
 
   const loadDashboardData = async () => {
     try {
       setLoading(true);
-      
-      // Load stats from different collections
       const [screensData, mediaData, playlistsData] = await Promise.all([
         appwriteService.getScreens(user!.$id).catch(() => ({ documents: [] })),
         appwriteService.getMediaFiles(user!.$id).catch(() => ({ documents: [] })),
         appwriteService.getPlaylists(user!.$id).catch(() => ({ documents: [] }))
       ]);
 
-      // Calculate currently playing screens
+      // Active screens
       const activeScreens = screensData.documents.filter((screen: any) => 
         screen.status === 'online' && screen.currentPlaylist
       ).length;
 
-      // Filter active playlists
-      const activePlaylists = playlistsData.documents.filter((playlist: any) => 
-        playlist.isActive
-      ).length;
+      // Active playlists
+      const activePlaylists = playlistsData.documents.filter((p: any) => p.isActive).length;
 
       setStats({
         totalScreens: screensData.documents.length,
         totalMedia: mediaData.documents.length,
-        activePlaylists: activePlaylists,
+        activePlaylists,
         currentlyPlaying: activeScreens
       });
 
-      // Generate scheduled dates for dot calendar (dates with active playlists)
+      // Calendar dates
       const dates = playlistsData.documents
-        .filter((playlist: any) => playlist.isActive && playlist.scheduledDate)
-        .map((playlist: any) => playlist.scheduledDate.split('T')[0]);
+        .filter((p: any) => p.isActive && p.scheduledDate)
+        .map((p: any) => p.scheduledDate.split('T')[0]);
       setScheduledDates([...new Set(dates)]);
 
-      // Get most recent media as "current media"
-      // if (mediaData.documents.length > 0) {
-      //   const latest = mediaData.documents.sort((a: any, b: any) => 
-      //     new Date(b.$createdAt).getTime() - new Date(a.$createdAt).getTime()
-      //   )[0];
-      //   setCurrentMedia(latest);
-      // }
+      // Current media preview
+      if (mediaData.documents.length > 0) {
+        const latest = mediaData.documents
+          .sort((a: any, b: any) => new Date(b.$createdAt).getTime() - new Date(a.$createdAt).getTime())[0];
+        let resolvedUrl = latest.externalUrl || latest.url || "";
+        if (!resolvedUrl && latest.fileId) {
+          try {
+            resolvedUrl = await appwriteService.getFilePreview(latest.fileId) || await appwriteService.getFileView(latest.fileId);
+          } catch (err) {
+            console.error("Error resolving file URL:", err);
+          }
+        }
+        setCurrentMedia({ ...latest, url: resolvedUrl });
+      }
 
-      
-if (mediaData.documents.length > 0) {
-  // pick the latest document
-  const latest = mediaData.documents
-    .sort((a: any, b: any) => new Date(b.$createdAt).getTime() - new Date(a.$createdAt).getTime())[0];
-
-  // Normalize / resolve a usable URL (same approach used in MediaLibrary)
-  let resolvedUrl = "";
-  if (latest.url && typeof latest.url === "string" && latest.url.trim() !== "") {
-    resolvedUrl = latest.url;
-  } else if (latest.fileId) {
-    try {
-      // prefer preview for images, fallback to view
-      resolvedUrl = (await appwriteService.getFilePreview(latest.fileId)) || (await appwriteService.getFileView(latest.fileId)) || "";
-    } catch (err) {
-      console.error("Error resolving file URL for dashboard currentMedia:", err);
-      resolvedUrl = "";
-    }
-  }
-
-  // ensure we store the resolved url on the currentMedia object
-  setCurrentMedia({ ...latest, url: resolvedUrl });
-}
-
-
-      // Generate some recent activity (in a real app, this would come from an activity log)
+      // Activity
       const activities: RecentActivity[] = [
-        ...mediaData.documents.slice(0, 2).map((media: any) => ({
-          id: media.$id,
-          type: 'media_upload' as const,
-          title: `Uploaded "${media.name}"`,
-          timestamp: media.$createdAt
+        ...mediaData.documents.slice(0, 2).map((m: any) => ({
+          id: m.$id,
+          type: 'media_upload',
+          title: `Uploaded "${m.name}"`,
+          timestamp: m.$createdAt
         })),
-        ...playlistsData.documents.slice(0, 2).map((playlist: any) => ({
-          id: playlist.$id,
-          type: 'playlist_created' as const,
-          title: `Created playlist "${playlist.name}"`,
-          timestamp: playlist.$createdAt
+        ...playlistsData.documents.slice(0, 2).map((p: any) => ({
+          id: p.$id,
+          type: 'playlist_created',
+          title: `Created playlist "${p.name}"`,
+          timestamp: p.$createdAt
         })),
-        ...screensData.documents.slice(0, 1).map((screen: any) => ({
-          id: screen.$id,
-          type: 'screen_connected' as const,
-          title: `Screen "${screen.name}" connected`,
-          timestamp: screen.$createdAt
+        ...screensData.documents.slice(0, 1).map((s: any) => ({
+          id: s.$id,
+          type: 'screen_connected',
+          title: `Screen "${s.name}" connected`,
+          timestamp: s.$createdAt
         }))
       ].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()).slice(0, 5);
 
@@ -629,27 +605,17 @@ if (mediaData.documents.length > 0) {
   const formatTimeAgo = (timestamp: string) => {
     const now = new Date();
     const time = new Date(timestamp);
-    const diffInHours = Math.floor((now.getTime() - time.getTime()) / (1000 * 60 * 60));
-    
-    if (diffInHours < 1) return 'Just now';
-    if (diffInHours < 24) return `${diffInHours}h ago`;
-    return `${Math.floor(diffInHours / 24)}d ago`;
+    const diff = Math.floor((now.getTime() - time.getTime()) / (1000 * 60 * 60));
+    if (diff < 1) return 'Just now';
+    if (diff < 24) return `${diff}h ago`;
+    return `${Math.floor(diff / 24)}d ago`;
   };
 
   const handleQuickStart = () => {
-    switch (quickStartAction) {
-      case 'upload':
-        onPageChange('media'); // ✅ Go to Media Library
-        break;
-      case 'playlist':
-        onPageChange('playlists'); // ✅ Go to Playlists
-        break;
-      case 'screen':
-        onPageChange('screens'); // ✅ Go to Screens
-        break;
-    }
+    onPageChange(quickStartAction === 'upload' ? 'media' : quickStartAction === 'playlist' ? 'playlists' : 'screens');
     setQuickStartOpen(false);
   };
+
 
   return (
     <div className="flex-1 overflow-auto">

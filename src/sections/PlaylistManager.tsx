@@ -2534,7 +2534,7 @@ const mediaPayload = {
   thumbnailUrl: item.media?.thumbnailUrl ?? "",
   userId: user?.$id ?? "unknown",
   status: "active",          // ✅ force always
-  playlistId: playlistId,    // ✅ always link to playlist
+  playlistId ,  // ✅ always link to playlist
   order: i
 };
 
